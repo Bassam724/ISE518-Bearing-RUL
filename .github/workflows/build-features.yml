@@ -39,9 +39,10 @@ jobs:
 
       - name: Download and aggregate the dataset
         run: |
+          set -o pipefail
           python pipeline/build_features.py --download \
-            --workdir "$RUNNER_TEMP/raw" --out data/processed --workers 4 2>&1 | tee data/processed_build_log.txt
-          mv data/processed_build_log.txt data/processed/build_log.txt
+            --workdir "$RUNNER_TEMP/raw" --out data/processed --workers 4 2>&1 | tee "$RUNNER_TEMP/build_log.txt"
+          cp "$RUNNER_TEMP/build_log.txt" data/processed/build_log.txt
 
       - name: Summary
         if: always()
