@@ -56,7 +56,7 @@ box.addEventListener('change', e => { const s = e.target.dataset.s; e.target.che
 document.getElementById('status_legend').innerHTML = ST.map((s,k) => `<span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${SCOL[k]};vertical-align:middle"></span> ${k} = ${SI[k]} ${s}</span>`).join('');
 document.getElementById('status_sub').textContent = 'Y = 0 Operational < 1 Degraded < 2 At risk < 3 Fault detected · prediction: ' + M.cls_model + ', extrapolation test · top lane: friction alert';
 document.getElementById('status_legend').innerHTML += '<span>👁 watch (friction index > 2σ for 2 h)</span><span>🔔 alarm (> 3σ for 2 h, latched)</span>';
-document.getElementById('fi_sub').textContent = `temperature rise + speed drop, robust z vs healthy baseline · shaded: watch (orange) and alarm (red) periods · `
+document.getElementById('fi_sub').textContent = `temperature rise + speed drop, robust z vs healthy baseline · shaded: watch (orange) and alarm (red) periods · drag to zoom, double-click to show all · `
   + `dotted line: first watch, hour ${M.watch_hour} · dashed lines: alarm = point P, hour ${M.P}, and stop criterion F, hour ${M.F}`;
 const fmt = (v, d=1) => (v === null || v === undefined || isNaN(v)) ? '–' : Number(v).toFixed(d);
 const lay = (t, extra={}) => Object.assign({margin:{l:48,r:14,t:10,b:36}, xaxis:{title:'test hour'}, yaxis:{title:t},
@@ -97,7 +97,7 @@ function render(){
   Plotly.react('c_status', [
     {x:hrs, y:col('status_true'), name:'true status', mode:'lines', line:{color:'#111', width:3, shape:'hvh'}},
     {x:hrs, y:col('status_pred'), name:'predicted (hourly majority)', mode:'markers', marker:{size:8, color:R.map(r => r.status_pred === null ? '#ccc' : SCOL[r.status_pred]), line:{color:'#333', width:1}}, text:R.map(r => sname(r.status_pred)), hovertemplate:'hour %{x}: %{text}<extra></extra>'},
-    {x:AL.map(r => r.hour), y:AL.map(() => 3.92), name:'friction alert: 👁 watch · 🔔 alarm', mode:'text', text:AL.map(r => r.alert === 2 ? '🔔' : '👁'), textfont:{size:12},
+    {x:AL.map(r => r.hour), y:AL.map(() => 3.92), name:'friction alert', showlegend:false, mode:'text', text:AL.map(r => r.alert === 2 ? '🔔' : '👁'), textfont:{size:12},
      customdata:AL.map(r => r.alert === 2 ? 'alarm (> 3σ, latched)' : 'watch (> 2σ for 2 h)'), hovertemplate:'hour %{x}: %{customdata}<extra></extra>'}],
     lay('', {yaxis:{tickvals:[0,1,2,3,3.92], ticktext:ST.map((s,k) => k + ' ' + s).concat(['friction alert']), range:[-0.5,4.3]},
              shapes:bands.concat([lane]).concat(alertBands(R).map(b => Object.assign({}, b, {yref:'y', y0:3.55, y1:4.3, opacity:b.opacity * 1.8}))).concat(marks),
@@ -109,7 +109,11 @@ function render(){
     {x:[lo,hi], y:[M.watch,M.watch], mode:'lines', line:{color:WCOL, dash:'dash', width:2}, name:'👁 watch limit (2σ)', hoverinfo:'skip'},
     {x:[null], y:[null], mode:'markers', marker:{symbol:'square', size:12, color:WCOL, opacity:0.45}, name:'watch period'},
     {x:[null], y:[null], mode:'markers', marker:{symbol:'square', size:12, color:ACOL, opacity:0.3}, name:'alarm period'}],
-    lay('robust z', {yaxis:{title:'robust z', type:'linear'}, shapes:alertBands(R).concat(marks), hovermode:'closest'}), {responsive:true, displayModeBar:false});
+    lay('robust z', {yaxis:{title:'robust z [σ]', type:'linear', range:[-2.5, 8.5]}, shapes:alertBands(R).concat(marks), hovermode:'closest',
+                     annotations:(() => { const top = R.reduce((m, r) => r.friction_index > m.friction_index ? r : m, R[0] || {friction_index:0});
+                       return top.friction_index > 8.5 ? [{x:top.hour, y:8.3, text:`↑ off scale: up to ${fmt(top.friction_index)} σ (hour ${top.hour})`,
+                         showarrow:false, xanchor:'right', font:{size:10, color:'#64748b'}}] : []; })()}),
+    {responsive:true, displayModeBar:false});
   const late = R.filter(r => r.hour >= Math.max(lo, M.EOL - 30));
   Plotly.react('c_rul', [{x:late.map(r=>r.hour), y:late.map(r=>r.rul_true), name:'true', line:{color:'#111', width:3}},
     {x:late.map(r=>r.hour), y:late.map(r=>r.rul_pred), name:M.rul_model, line:{color:'#d1495b'}}],
