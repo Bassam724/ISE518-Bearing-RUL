@@ -1,4 +1,6 @@
-# Early-Stage Bearing Failure Prediction and RUL Estimation
+# Ball-Bearing Prognostics from Run-to-Failure Data
+**Early Degradation Detection, Ordinal Machine-Status Classification and Remaining Useful Life (RUL) Estimation**
+
 
 **ISE 518 – Data Analytics for Reliability and Maintenance** · King Fahd University of Petroleum & Minerals · First Semester 2026-27
 **Instructor:** Dr. Alaa Khamis · **Group 8**
