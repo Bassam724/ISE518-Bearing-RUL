@@ -34,12 +34,14 @@ Lecture 9), label-encoded 0 < 1 < 2 < 3:
 ## Main results
 | Question | Answer from the data |
 |---|---|
-| When does degradation become detectable? | **Hour 119**: 6 h before the stop criterion was met (hour 125), 9 h before the end of the test, with no false alarms in 111 healthy hours |
+| When does degradation become detectable? | **Hour 119**: 6 h before the stop criterion was met (hour 125), 9 h before the end of the test, with no false alarms in 111 healthy hours. A 2σ *watch* level warns at **hour 117** (8 h before) at the cost of one false watch after an operating step; no threshold and no recorded signal can warn before hour 116 (P–F interval ≈ 9 h under this heavy test load). |
 | Which signals reveal it first? | The **temperature rise above ambient** and the **drop in shaft speed** (estimated from the vibration spectrum) – both consequences of friction. Vibration RMS stays flat until hour 124. |
 | How well can RUL be estimated? | Mean absolute error ≈ **2.5 h over the last 12 h** when the failure path is represented in training (ridge regression on physics inputs, vs 6 h for a naive baseline). For a never-seen failure no model beats the baseline by much, which shows the need for more run-to-failure data. |
 | How reliably can the ordinal machine status be recognized? | Conservative combination of an **ordinal logistic regression** (`statsmodels`) and the status implied by a linear RUL trend: **quadratic-weighted κ = 0.89**, mean error 0.08 levels, 0.8 % of windows two or more levels off. Every ❌ Fault detected window is recognized even when no fault was in the training data; the two middle levels are often confused with their neighbours |
 
 ![Detection timeline](docs/figures/detection_timeline.png)
+
+![Earlier warning: lead time versus false alarms](docs/figures/earlier_warning_tradeoff.png)
 
 ![Ordinal status evaluation](docs/figures/status_evaluation.png)
 
