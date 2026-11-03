@@ -18,6 +18,17 @@ The notebook follows the course's **7-step procedure**: problem characterization
 data exploration (the full EDA of the assignment brief), model development, model evaluation and deployment.
 Open it in Colab and choose *Runtime → Run all* (about 3–4 minutes). All data is loaded from this repository by URL.
 
+## Output: an ordinal machine status
+The model output $Y(t)$ is not a binary healthy / failed flag but a **four-level ordinal machine status** (an ordinal label, as in
+Lecture 9), label-encoded 0 < 1 < 2 < 3:
+
+| Y | Machine status | Condition of the bearing | Remaining life | Recommended action |
+|:-:|---|---|---|---|
+| 0 | ✅ **Operational** | normal operation | more than 12 h | continue normal monitoring |
+| 1 | 🔻 **Degraded** | degradation has started (inside the P–F interval) | 6 – 12 h | plan the replacement |
+| 2 | ⚠️ **At risk** | failure is imminent | 3 – 6 h | replace at the next opportunity, within the shift |
+| 3 | ❌ **Fault detected** | stop criterion met (T > 85 °C and vibration > 9 m/s²) | 3 h or less | stop the machine and replace the bearing |
+
 ![EDA dashboard](docs/figures/eda_dashboard.png)
 
 ## Main results
@@ -26,13 +37,15 @@ Open it in Colab and choose *Runtime → Run all* (about 3–4 minutes). All dat
 | When does degradation become detectable? | **Hour 119**: 6 h before the stop criterion was met (hour 125), 9 h before the end of the test, with no false alarms in 111 healthy hours |
 | Which signals reveal it first? | The **temperature rise above ambient** and the **drop in shaft speed** (estimated from the vibration spectrum) – both consequences of friction. Vibration RMS stays flat until hour 124. |
 | How well can RUL be estimated? | Mean absolute error ≈ **2.5 h over the last 12 h** when the failure path is represented in training (ridge regression on physics inputs, vs 6 h for a naive baseline). For a never-seen failure no model beats the baseline by much, which shows the need for more run-to-failure data. |
-| Health-state classification Ŷ(t) = f(X(t)) | Logistic regression on the two physics inputs: **F1 = 0.72, ROC-AUC = 0.97** even when the failure stage is held out of training |
+| How reliably can the ordinal machine status be recognized? | Conservative combination of an **ordinal logistic regression** (`statsmodels`) and the status implied by a linear RUL trend: **quadratic-weighted κ = 0.89**, mean error 0.08 levels, 0.8 % of windows two or more levels off. Every ❌ Fault detected window is recognized even when no fault was in the training data; the two middle levels are often confused with their neighbours |
 
 ![Detection timeline](docs/figures/detection_timeline.png)
 
+![Ordinal status evaluation](docs/figures/status_evaluation.png)
+
 ## Repository structure
 ```
-ISE518_G8_Bearing_EDA_RUL.ipynb      main notebook (EDA + early detection + RUL)
+ISE518_G8_Bearing_EDA_RUL.ipynb      main notebook (EDA, early detection, ordinal machine status, RUL)
 data/processed/                      aggregated tables produced from the raw data (loaded by the notebook)
   window_features.csv.gz             10,062 one-second windows x 64 condition indicators
   file_quality_report.csv            data-quality checks for each of the 129 raw files
