@@ -57,7 +57,7 @@ load, the only one with ground truth, the advised stop always came before the en
 ## Main results
 | Question | Answer from the data |
 |---|---|
-| When does degradation become detectable? | **Hour 119**: 6 h before the stop criterion was met (hour 125), 9 h before the end of the test, with no false alarms in 111 healthy hours. A 2σ *watch* level warns at **hour 117** (8 h before) at the cost of one false watch after an operating step; no threshold and no recorded signal can warn before hour 116 (P–F interval ≈ 9 h under this heavy test load). |
+| When does degradation become detectable? | **Hour 119**: 6 h before the stop criterion was met (hour 125), 9 h before the end of the test, with no false alarms in 111 healthy hours. A 2σ *watch* level warns at **hour 117** (8 h before) at the cost of one false watch after an operating step (hours 91–95; the one-hour spike at hour 107 is filtered by the 2-hour rule); no threshold and no recorded signal can warn before hour 116 (P–F interval ≈ 9 h under this heavy test load). |
 | Which signals reveal it first? | The **temperature rise above ambient** and the **drop in shaft speed** (estimated from the vibration spectrum) – both consequences of friction. Vibration RMS stays flat until hour 124. |
 | How well can RUL be estimated? | Mean absolute error ≈ **2.5 h over the last 12 h** when the failure path is represented in training (ridge regression on physics inputs, vs 6 h for a naive baseline). For a never-seen failure no model beats the baseline by much, which shows the need for more run-to-failure data. |
 | How reliably can the ordinal machine status be recognized? | Conservative combination of an **ordinal logistic regression** (`statsmodels`) and the status implied by a linear RUL trend: **quadratic-weighted κ = 0.89**, mean error 0.08 levels, 0.8 % of windows two or more levels off. Every ❌ Fault detected window is recognized even when no fault was in the training data; the two middle levels are often confused with their neighbours |
@@ -71,8 +71,12 @@ load, the only one with ground truth, the advised stop always came before the en
 
 ## Interactive dashboard
 The notebook writes a self-contained dashboard, `dashboard/bearing_dashboard.html`, with the machine status, the two-level
-friction alarm, the DCS load advisor and the condition indicators. GitHub cannot run interactive charts, so open it in the
-browser: **[interactive dashboard](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html)** (or click the snapshot).
+friction alarm, the DCS load advisor, an **operator alert console** and the condition indicators. The console replays the
+monitoring hour by hour as the control room saw it: the alert state (normal, pending, 👁 watch, 🔔 alarm), why the rule decided it,
+what drove the friction index (temperature rise or speed drop) and what to do, with an event log where the operator records the
+cause of each event. For example, hours 91–95 raised a watch because the index stayed above 2σ for five hours after a step change
+in temperature and speed (an operating change: a false watch), while the 2.93σ peak at hour 107 lasted only one hour and was
+filtered by the 2-hour rule. GitHub cannot run interactive charts, so open it in the browser: **[interactive dashboard](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html)** (or click the snapshot).
 
 [![Snapshot of the interactive dashboard](docs/figures/dashboard.png)](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html)
 
