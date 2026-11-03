@@ -10,7 +10,7 @@
 | Nasser Alasmari | 201765530 |
 | Mohammad Almarhoon | 201914630 |
 
-| Notebook | Interactive dashboard |
+| Notebook | Interactive dashboard (machine status, alarms, DCS load advisor) |
 |---|---|
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bassam724/ISE518-Bearing-RUL/blob/main/ISE518_G8_Bearing_EDA_RUL.ipynb) | [View dashboard](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html) · [mirror](https://htmlpreview.github.io/?https://github.com/Bassam724/ISE518-Bearing-RUL/blob/main/dashboard/bearing_dashboard.html) |
 
@@ -18,16 +18,39 @@ The notebook follows the course's **7-step procedure**: problem characterization
 data exploration (the full EDA of the assignment brief), model development, model evaluation and deployment.
 Open it in Colab and choose *Runtime → Run all* (about 3–4 minutes). All data is loaded from this repository by URL.
 
-## Output: an ordinal machine status
+## Output: an ordinal machine status, with load scenarios for the DCS
 The model output $Y(t)$ is not a binary healthy / failed flag but a **four-level ordinal machine status** (an ordinal label, as in
-Lecture 9), label-encoded 0 < 1 < 2 < 3:
+Lecture 9), label-encoded 0 < 1 < 2 < 3. Because the remaining life depends on how hard the machine is driven, it is given for
+three **load scenarios** that the DCS operator can choose: **high** = the tested load (5.88 kN radial, 2.94 kN axial),
+**medium** = 75 % and **low** = 50 % of it.
 
-| Y | Machine status | Condition of the bearing | Remaining life | Recommended action |
-|:-:|---|---|---|---|
-| 0 | ✅ **Operational** | normal operation | more than 12 h | continue normal monitoring |
-| 1 | 🔻 **Degraded** | degradation has started (inside the P–F interval) | 6 – 12 h | plan the replacement |
-| 2 | ⚠️ **At risk** | failure is imminent | 3 – 6 h | replace at the next opportunity, within the shift |
-| 3 | ❌ **Fault detected** | stop criterion met (T > 85 °C and vibration > 9 m/s²) | 3 h or less | stop the machine and replace the bearing |
+| Y | Machine status | Condition of the bearing | RUL at high load (as tested) | at medium load (75 %) | at low load (50 %) | DCS action |
+|:-:|---|---|---|---|---|---|
+| 0 | ✅ **Operational** | normal operation | more than 12 h | more than 25 h | more than 73 h | any load up to high; continue normal monitoring |
+| 1 | 🔻 **Degraded** | degradation has started (inside the P–F interval) | 6 – 12 h | 13 – 25 h | 36 – 73 h | limit to medium load; plan the replacement |
+| 2 | ⚠️ **At risk** | failure is imminent | 3 – 6 h | 6 – 13 h | 18 – 36 h | limit to low load; replace at the next opportunity |
+| 3 | ❌ **Fault detected** | stop criterion met (T > 85 °C and vibration > 9 m/s²) | 3 h or less | – | – | stop the machine and replace the bearing |
+
+The status thresholds are hours of remaining life at the tested load. The medium and low columns apply the ISO 281 load–life
+law for ball bearings (life ∝ P⁻³, with the equivalent load P = X·Fr + Y·Fa recomputed for each scenario): **×2.1 at medium and
+×6.1 at low load**. Only the high load was tested, so these two columns are engineering extrapolations, not measurements.
+
+### DCS load advisor
+For the current machine status, the advisor (notebook Section 7.2, and interactive in the dashboard) gives the remaining life at
+each load and the **highest load that still reaches the next planned stop**. The last 3 h of life at the tested load (the ❌ Fault
+detected window, ≈ 6 h at medium and ≈ 18 h at low) end in functional failure, so they are kept in reserve. At the first warning
+(hour 119, 🔻 Degraded):
+
+| Load scenario | Remaining life | Must stop within | Reaches a stop planned in 24 h? |
+|---|---|---|---|
+| High (100 %, as tested) | 8.3 h | 5.3 h | no |
+| Medium (75 %) | 17.5 h | 11.1 h | no |
+| Low (50 %) | 50.0 h | 31.8 h | yes |
+
+To reach a stop planned in 12, 24 or 48 h, the load must stay at or below **72 %, 55 % or 42 %** of the tested load. At the tested
+load, the only one with ground truth, the advised stop always came before the end of life, with 2 to 4 h to spare.
+
+![DCS load advisor](docs/figures/load_advisor.png)
 
 ![EDA dashboard](docs/figures/eda_dashboard.png)
 
@@ -38,6 +61,7 @@ Lecture 9), label-encoded 0 < 1 < 2 < 3:
 | Which signals reveal it first? | The **temperature rise above ambient** and the **drop in shaft speed** (estimated from the vibration spectrum) – both consequences of friction. Vibration RMS stays flat until hour 124. |
 | How well can RUL be estimated? | Mean absolute error ≈ **2.5 h over the last 12 h** when the failure path is represented in training (ridge regression on physics inputs, vs 6 h for a naive baseline). For a never-seen failure no model beats the baseline by much, which shows the need for more run-to-failure data. |
 | How reliably can the ordinal machine status be recognized? | Conservative combination of an **ordinal logistic regression** (`statsmodels`) and the status implied by a linear RUL trend: **quadratic-weighted κ = 0.89**, mean error 0.08 levels, 0.8 % of windows two or more levels off. Every ❌ Fault detected window is recognized even when no fault was in the training data; the two middle levels are often confused with their neighbours |
+| How much load can the bearing take after a warning? | Derating is the operator's strongest lever: **×2.1 remaining life at 75 % load and ×6.1 at 50 %** (ISO 281). At the first warning the bearing had 8.3 h of life at the tested load, 17.5 h at medium and 50 h at low; a stop planned in 24 h is still reached at up to **55 %** of the tested load. Medium and low are extrapolations from a single-load test. |
 
 ![Detection timeline](docs/figures/detection_timeline.png)
 
@@ -58,7 +82,7 @@ data/processed/                      aggregated tables produced from the raw dat
   manifest.json, build_log.txt       parameters, versions and log of the pipeline run
 pipeline/build_features.py           raw-data pipeline (download, validation, aggregation)
 .github/workflows/build-features.yml GitHub Actions job that ran the pipeline on the 18.5 GB raw dataset
-dashboard/bearing_dashboard.html     interactive Plotly dashboard generated by the notebook
+dashboard/bearing_dashboard.html     interactive Plotly dashboard generated by the notebook (incl. the DCS load advisor)
 docs/figures/                        figures used in this README
 ```
 
