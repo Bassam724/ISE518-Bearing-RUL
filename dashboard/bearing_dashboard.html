@@ -240,8 +240,11 @@ function render(){
     + `Derating extends the remaining life: by ×${fmt(lf(SCN.Medium), 1)} at medium and ×${fmt(lf(SCN.Low), 1)} at low load (load advisor, ISO 281)`
     + (() => { const fw = H.find(x => x.hour === M.first_warning), bw = fw ? advBasis(fw) : null;
                return bw && bw.code >= 1 && bw.code <= 2 ? `; at the first warning (hour ${M.first_warning}) a stop planned in 24 h is still reached at up to ${maxLoad(bw.basis, 24)} % of the tested load. ` : '. '; })()
+    + (() => { const lead = [M.EOL - M.P, M.EOL - M.watch_hour], pct = lead.map(x => Math.round(100 * x / M.EOL)), hrs = lead.map(x => Math.round(5000 * x / M.EOL / 10) * 10);
+               return `Laboratory versus industry: the first warning came with ${pct[0]}–${pct[1]} % of the bearing's life still ahead (${lead[0]}–${lead[1]} h of ${M.EOL} h); `
+                 + `on rotating equipment that runs at least 5,000 h, the same share of life would leave about <b>${hrs[0]}–${hrs[1]} h</b> to plan the replacement. `; })()
     + `Vibration RMS reacts only at the final event, and the envelope spectrum shows no bearing defect frequency. `
-    + `Recommended practice: trend temperature rise and shaft speed together with vibration, and plan replacement as soon as the status leaves ${SI[0]} Operational.`;
+    + `Recommended practice: trend temperature rise and shaft speed together with vibration, and plan replacement as soon as the status leaves ${SI[0]} Operational, before the bearing failure spreads to the shaft, impeller, motor, coupling or gearbox.`;
 }
 render();
 renderAdvisor();

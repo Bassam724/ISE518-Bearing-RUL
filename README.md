@@ -69,6 +69,13 @@ load, the only one with ground truth, the advised stop always came before the en
 
 ![Ordinal status evaluation](docs/figures/status_evaluation.png)
 
+## Interactive dashboard
+The notebook writes a self-contained dashboard, `dashboard/bearing_dashboard.html`, with the machine status, the two-level
+friction alarm, the DCS load advisor and the condition indicators. GitHub cannot run interactive charts, so open it in the
+browser: **[interactive dashboard](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html)** (or click the snapshot).
+
+[![Snapshot of the interactive dashboard](docs/figures/dashboard.png)](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html)
+
 ## Repository structure
 ```
 ISE518_G8_Bearing_EDA_RUL.ipynb      main notebook (EDA, early detection, ordinal machine status, RUL)
@@ -113,3 +120,29 @@ jupyter notebook ISE518_G8_Bearing_EDA_RUL.ipynb
 In line with the course guidance on generative AI, the group discloses that Claude (Anthropic) assisted with the pipeline
 code, the analysis and plotting code, the dashboard and first drafts of the explanations. All results are produced by
 running the code on the real dataset. See the *AI use and reflection* section at the end of the notebook.
+
+## From a laboratory test to industrial equipment
+This project is a **laboratory, accelerated test**: the bearing carried about 45 % of its dynamic load rating and reached the end
+of its life after only 128 test hours. In industry, rotating equipment is expected to run **at least 5,000 h** when the maintenance
+procedures are carried out and the team complies with them, which is what ensures quality and safe operation (a conservative
+figure: API 610 requires process-pump bearings to have an L10 life of at least 25,000 h).
+
+| | This laboratory test | Rotating equipment in industry |
+|---|---|---|
+| Life of the bearing | 128 test hours (accelerated, heavy load) | at least 5,000 h |
+| Warning before the end of life | 9–11 h = **7–9 % of the life** (watch at hour 117, alarm at hour 119) | **about 350–430 h** (15–18 days of continuous running) at the same share of life |
+
+Measured against its own life, our model detected the coming failure, and with the DCS load advisor could control it, close to
+the last tenth of the bearing's life. Under the ISO 281 load–life law a lighter load stretches every phase of the life by the same
+factor, so in service the warning keeps roughly the same share of the life: **hundreds of hours to plan** the replacement, order
+the bearing, fit the job into a planned shutdown and derate in the meantime, instead of an unplanned stop.
+
+**What the early warning saves.** The warning came 6–8 h before the stop criterion, that is, before the bearing failed
+functionally. Acted on, it turns the failure into a planned bearing change and saves the rest of the machine from secondary
+damage: the **shaft**, which a seized or collapsing bearing scores and overheats until it needs a long overhaul; the **impeller
+and its vanes**, wear rings and seals, which are damaged when the rotor rubs; the **motor**, which is overloaded; and whatever
+else is connected to the rotating equipment, such as the **coupling, pulley and belts or the gearbox**. A bearing and a short
+planned stop cost far less than these parts and the long overhaul they would need.
+
+These figures are an engineering extrapolation from one laboratory bearing, so the thresholds should be confirmed with plant
+history before the model is used in service.
