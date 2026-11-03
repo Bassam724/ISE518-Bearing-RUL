@@ -12,7 +12,7 @@
 
 | Notebook | Interactive dashboard |
 |---|---|
-| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bassam724/ISE518-Bearing-RUL/blob/main/ISE518_G8_Bearing_EDA_RUL.ipynb) | [View dashboard](https://htmlpreview.github.io/?https://github.com/Bassam724/ISE518-Bearing-RUL/blob/main/dashboard/bearing_dashboard.html) |
+| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bassam724/ISE518-Bearing-RUL/blob/main/ISE518_G8_Bearing_EDA_RUL.ipynb) | [View dashboard](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html) · [mirror](https://htmlpreview.github.io/?https://github.com/Bassam724/ISE518-Bearing-RUL/blob/main/dashboard/bearing_dashboard.html) |
 
 The notebook follows the course's **7-step procedure**: problem characterization, data collection, data preparation,
 data exploration (the full EDA of the assignment brief), model development, model evaluation and deployment.
