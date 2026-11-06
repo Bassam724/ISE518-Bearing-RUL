@@ -123,9 +123,14 @@ jupyter notebook ISE518_G8_Bearing_EDA_RUL.ipynb
 ```
 
 ## AI use
-In line with the course guidance on generative AI, the group discloses that Claude (Anthropic) assisted with the pipeline
-code, the analysis and plotting code, the dashboard and first drafts of the explanations. All results are produced by
-running the code on the real dataset. See the *AI use and reflection* section at the end of the notebook.
+The methods, equations and evaluation choices were selected by the group from the ISE 518 lectures (the 7-step machine-learning
+procedure, the P-diagram, ordinal machine status and feature encoding, descriptive statistics, outlier rules, unsupervised learning,
+correlation analysis and data-driven prognostics) and from the books, standards (ISO 281, ISO 10816, API 610) and academic articles
+listed in the notebook's references. In line with the course guidance on generative AI, the group discloses that Claude (Anthropic)
+generated the code and first drafts of the text from these inputs: for each step the group specified the method, the equation and the
+expected output, reviewed the results, and asked for corrections where they did not fit the course methods or the operators' needs.
+All results are produced by running the code on the real dataset in Google Colab. See the *AI use and reflection* section at the end of
+the notebook for the lecture-by-lecture list and the group's reflection.
 
 ## From a laboratory test to industrial equipment
 This project is a **laboratory, accelerated test**: the bearing carried about 45 % of its dynamic load rating and reached the end
