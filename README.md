@@ -85,7 +85,7 @@ filtered by the 2-hour rule. GitHub cannot run interactive charts, so open it in
 ## Repository structure
 ```
 ISE518_G8_Bearing_EDA_RUL_V2.ipynb   Version 2 (submission): organized by the EDA instructions within the 7 steps
-ISE518_G8_Bearing_EDA_RUL_V1.ipynb   Version 1: the original notebook (also tagged v1)
+ISE518_G8_Bearing_EDA_RUL_V1.ipynb   Version 1: the original notebook
 data/processed/                      aggregated tables produced from the raw data (loaded by the notebook)
   window_features.csv.gz             10,062 one-second windows x 64 condition indicators
   file_quality_report.csv            data-quality checks for each of the 129 raw files
