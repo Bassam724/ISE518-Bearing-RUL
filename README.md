@@ -14,10 +14,11 @@
 
 | Notebook | Interactive dashboard (machine status, alarms, DCS load advisor) |
 |---|---|
-| **Version 3:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bassam724/ISE518-Bearing-RUL/blob/main/ISE518_G8_Bearing_EDA_RUL_V3.ipynb)<br>Version 2: [open in Colab](https://colab.research.google.com/github/Bassam724/ISE518-Bearing-RUL/blob/main/ISE518_G8_Bearing_EDA_RUL_V2.ipynb) | [View dashboard](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html) · [mirror](https://htmlpreview.github.io/?https://github.com/Bassam724/ISE518-Bearing-RUL/blob/main/dashboard/bearing_dashboard.html) |
+| **Version 3:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bassam724/ISE518-Bearing-RUL/blob/main/ISE518_G8_Bearing_EDA_RUL_V3.ipynb) | [View dashboard](https://raw.githack.com/Bassam724/ISE518-Bearing-RUL/main/dashboard/bearing_dashboard.html) · [mirror](https://htmlpreview.github.io/?https://github.com/Bassam724/ISE518-Bearing-RUL/blob/main/dashboard/bearing_dashboard.html) |
 
-The notebook follows the course's **7-step procedure**: problem characterization, data collection, data preparation,
-data exploration (the full EDA of the assignment brief), model development, model evaluation and deployment.
+Sections 1–6 follow the **six EDA instructions** of the assignment: data loading, cleaning and preparation, univariate analysis,
+multivariate analysis, time-series and trend analysis, and visualization. Section 7 adds model development, evaluation and
+deployment (Steps 5–7 of the course's 7-step procedure), including the DCS load advisor and the interactive dashboard.
 Open it in Colab and choose *Runtime → Run all* (about 3–4 minutes). All data is loaded from this repository by URL.
 
 ## Output: an ordinal machine status, with load scenarios for the DCS
@@ -85,7 +86,6 @@ filtered by the 2-hour rule. GitHub cannot run interactive charts, so open it in
 ## Repository structure
 ```
 ISE518_G8_Bearing_EDA_RUL_V3.ipynb   Version 3: organized by the six EDA instructions, models and dashboard in Section 7
-ISE518_G8_Bearing_EDA_RUL_V2.ipynb   Version 2: organized by the 7-step procedure (same code and outputs)
 data/processed/                      aggregated tables produced from the raw data (loaded by the notebook)
   window_features.csv.gz             10,062 one-second windows x 64 condition indicators
   file_quality_report.csv            data-quality checks for each of the 129 raw files
